@@ -1,0 +1,37 @@
+name: Deploy to PRD
+
+on:
+  workflow_dispatch:
+    inputs:
+      aprovador_gmud:
+        required: true
+
+jobs:
+  gmud:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Environment
+        run: |
+          echo "environment: ${{ github.event.inputs.environment }}"
+          echo "aprovador_gmud: ${{ github.event.inputs.aprovador_gmud }}" 
+          
+      - name: create gmud
+        run: |
+          echo "something 2"
+         
+  deploy:
+    runs-on: ubuntu-latest
+    needs: gmud
+    environment:
+      name: prd
+    steps:
+      - name: Print Environment 2
+        run: |
+          echo "environment: ${{ github.event.inputs.environment }}"
+          echo "aprovador_gmud: ${{ github.event.inputs.aprovador_gmud }}" 
+          
+      - name: de facto deploy
+        run: |
+          echo "de facto deploying..."
+
+

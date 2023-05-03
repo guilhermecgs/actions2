@@ -1,0 +1,25 @@
+name: Deploy to Environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: Ambiente para fazer deploy não produtivo
+        options: 
+        - qa
+        - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.inputs.environment }}
+    steps:
+      - name: Print Environment
+        run: |
+          echo "environment: ${{ github.event.inputs.environment }}"
+          
+      - name: de facto deploy
+        run: |
+          echo "de facto deploying..."

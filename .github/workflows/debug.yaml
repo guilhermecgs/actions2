@@ -1,0 +1,64 @@
+name: debug env vars
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: environment
+
+  
+jobs:
+
+  get-environment-id:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get environment ID
+        uses: actions/http-client@v2.x
+        id: get-environment-id
+        with:
+          url: https://api.github.com/repos/${{ github.repository }}/environments
+          method: GET
+          headers: |
+            Authorization: token ${{ secrets.GITHUB_TOKEN }}
+          output-format: json
+      - name: Set environment ID
+        id: set-environment-id
+        
+        run: |
+          echo "${{steps.get-environment-id.outputs.response}}"
+#          echo "::set-output name=env_id::${{ steps.get-environment-id.outputs.response | fromJson | jq --raw-output --arg env_name ${{ env.ENVIRONMENT_NAME }} '.[] | select(.name == $env_name) | .id' }}"
+      - name: Print environment ID
+        run: echo "Environment Id for ${{ env.ENVIRONMENT_NAME }} is ${{ steps.set-environment-id.outputs.env_id }}"
+                  
+  debug:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_CONTEXT: ${{ toJson(github) }}
+    steps:
+      - name: Dump GitHub context
+        run: echo "$GITHUB_CONTEXT"
+        
+      - name: Dump job context
+        env:
+          JOB_CONTEXT: ${{ toJson(job) }}
+        run: echo "$JOB_CONTEXT"
+        
+      - name: Dump steps context
+        env:
+          STEPS_CONTEXT: ${{ toJson(steps) }}
+        run: echo "$STEPS_CONTEXT"
+        
+      - name: Dump runner context
+        env:
+          RUNNER_CONTEXT: ${{ toJson(runner) }}
+        run: echo "$RUNNER_CONTEXT"
+        
+      - name: Dump strategy context
+        env:
+          STRATEGY_CONTEXT: ${{ toJson(strategy) }}
+        run: echo "$STRATEGY_CONTEXT"
+        
+      - name: Dump matrix context
+        env:
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
+        run: echo "$MATRIX_CONTEXT"
